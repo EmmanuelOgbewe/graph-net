@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href=graph_net.css>
+    <title>Graph Net</title>
+</head>
+<body>
+    <script src="./utils.js"></script>
+    <div>
+        <label>Graph Net</label><br>
+        <section id="sect1">
+            <canvas id="canvas" height="600" width="1200w">
+            </canvas>
+            <section id="controls">
+                <!-- <label>Controls</label><br> -->
+                <section>
+                    <label id="node-count">Node count: 0</label><br>
+                    <label id="line-count">Line count: 0</label><br>
+                    <label id="selected-node"></label>
+                </section> <br>
+                <input id="clear" type="button" value="Clear graph" /> <br>
+                <input id="connect-points" type="button" value="Connect all points" /> <br>
+                <section>
+                    <label>Search algorithms: </label><br>
+                    <input id="bfs" type="button" value="Run BFS" /> <br>
+                </section>
+               
+            </section>
+        </section>
+    </div>
+    <script src="graph_net.js"></script>
+    <script>
+        let canvas = document.getElementById("canvas");
+        let strokeColor = "blue";
+        let sideLength = 15;
+        var ctx = canvas.getContext('2d');
+        let rect = canvas.getBoundingClientRect();
+        let highlightedNodes = [];
+        
+        // canvas.addEventListener("click", draw);
+        canvas.addEventListener("mousedown", draw);
+        canvas.addEventListener("mousemove", onMouseOver);
+        
+
+        function highlightLine(event){
+
+        }
+
+        function onMouseOver(event){
+            var xPos = event.pageX - rect.x;
+            var yPos = event.pageY - rect.y;
+
+            //find node on canvas
+            var distance = Infinity;
+            var currNode = null;
+            if(nodes.length != 0){
+                for (node in nodes){
+                let nodeX = nodes[node].x;
+                let nodeY = nodes[node].y;
+                
+                var currDistance = Math.min(distance, Math.hypot(nodeX - xPos, nodeY - yPos));
+                if(currDistance < distance && currDistance <= 15 ){
+                        distance = currDistance;
+                        currNode = nodes[node];
+                        highlightedNodes.push(currNode);
+                    
+                } else {
+                    if(highlightedNodes.length != 0){
+                        var defaultNode = highlightedNodes.pop();
+                        ctx.fillStyle = "blue";
+                        ctx.fillRect(defaultNode.x, defaultNode.y, sideLength, sideLength);
+                        ctx.stroke();
+
+                    } 
+                }
+            }
+            // highlight node thats closet the mouse pointer
+            // console.log(`distance: ${distance} node: ${currNode.id}`);
+                if(currNode != null){
+                    //save sate
+    
+                    ctx.fillStyle = "red";
+                    ctx.fillRect(currNode.x, currNode.y, sideLength, sideLength);
+                    ctx.stroke();
+
+                }
+            }
+        }
+
+        function draw(event) {
+            
+            var xPos = event.pageX - rect.left;
+            var yPos = event.pageY- rect.top;
+            if(highlightedNodes.length === 0){
+                ctx.fillStyle = strokeColor;
+                ctx.fillRect(xPos, yPos, sideLength, sideLength);
+                ctx.stroke();
+                nodes.push(new Node(xPos,yPos,strokeColor, nodes.length));
+                meta.numOfNodes = meta.numOfNodes + 1;
+                updateGraphInfo();
+
+            } else {
+                selectedNode = highlightedNodes[0];
+                document.getElementById('selected-node').innerHTML = `Selected Node: <strong>${selectedNode.id}</strong>`
+            }
+        }
+        
+    </script>
+</body>
+</html>
+
